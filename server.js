@@ -23,6 +23,7 @@ const store = new MongoDBStore({
 })
 
 const app = express()
+const PORT = process.env.PORT || 8000
 
 app.use(express.json({limit: '50mb'}))
 app.use(express.urlencoded({limit: '50mb', extended: true, parameterLimit: 50000})) 
@@ -99,4 +100,4 @@ io.on("connection", (socket) => {
 });
 
 
-httpServer.listen(process.env.PORT, () => console.log('Server running on port ' + process.env.PORT))
+httpServer.listen(PORT, () => console.log('Server running on port ' + PORT))
