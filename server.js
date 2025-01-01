@@ -103,6 +103,8 @@ const startServer = async()=>{
         console.log("Mongodb running on port " + PORT);
         httpServer.listen(PORT, () => console.log('Server running on port ' + PORT))
     } catch (error) {
+        console.log(process.env.MONGO_DB_URI);
+        
         console.log(error.message);
     }
 }
