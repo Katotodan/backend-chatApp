@@ -13,10 +13,6 @@ const { createServer } = require("http");
 const { Server } = require("socket.io");
 
 
-mongoose.connect(process.env.MONGO_DB_URI)
-.then(() => console.log('Mongodb running'))
-.catch( err => console.log('Mongodb not running'))
-
 const store = new MongoDBStore({
     uri: process.env.MONGO_DB_URI,
     collection: 'mySessions'
@@ -99,5 +95,17 @@ io.on("connection", (socket) => {
   // ... 
 });
 
+const startServer = async()=>{
+    try {
+        await mongoose.connect(process.env.MONGO_DB_URI, {
+            serverSelectionTimeoutMS: 5000, // Adjust as needed
+        })
+        console.log("Mongodb running on port " + PORT);
+        httpServer.listen(PORT, () => console.log('Server running on port ' + PORT))
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+startServer()
 
-httpServer.listen(PORT, () => console.log('Server running on port ' + PORT))
+
