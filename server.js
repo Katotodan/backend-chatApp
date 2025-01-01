@@ -7,7 +7,6 @@ const passport = require('passport');
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session)
 require('dotenv').config()
-const frontendUrl = "https://frontend-chat-n3fv9ikio-daniel-katotos-projects.vercel.app"
 
 // Socket import
 const { createServer } = require("http");
