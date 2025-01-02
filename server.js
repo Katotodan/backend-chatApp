@@ -29,7 +29,13 @@ app.use(session({
     resave: false, 
     saveUninitialized: false,
     proxy: true,
-    store: store
+    store: store,
+    cookie: {
+        secure: true, // Set to true if you're using HTTPS
+        httpOnly: true,
+        maxAge: 1000 * 60 * 60 * 24, // 1 day
+        sameSite: "none",
+    },
 })); 
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', "https://frontend-chat-app-dusky.vercel.app"); // Replace with your React app's origin
