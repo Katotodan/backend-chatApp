@@ -21,12 +21,14 @@ const store = new MongoDBStore({
 const app = express()
 const PORT = process.env.PORT || 8000
 
+app.set("trust proxy", 1);
 app.use(express.json({limit: '50mb'}))
 app.use(express.urlencoded({limit: '50mb', extended: true, parameterLimit: 50000})) 
 app.use(session({ 
     secret: 'keyboard cat',
     resave: false, 
     saveUninitialized: false,
+    proxy: true,
     store: store
 })); 
 app.use((req, res, next) => {
@@ -101,7 +103,7 @@ const startServer = async()=>{
         await mongoose.connect(process.env.MONGO_DB_URI, {
             serverSelectionTimeoutMS: 5000, // Adjust as needed
         })
-        console.log("Mongodb running on port " + PORT);
+        console.log("Mongodb running ....");
         httpServer.listen(PORT, () => console.log('Server running on port ' + PORT))
     } catch (error) {        
         console.log(error.message);
