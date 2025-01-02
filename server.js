@@ -54,7 +54,7 @@ app.use("/", messageRouter)
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
     cors: {
-        origin: process.env.frontendUrl,
+        origin: "https://frontend-chat-app-dusky.vercel.app",
         allowedHeaders: ["Content-Type", "Authorization"],
         credentials: true
     } 
