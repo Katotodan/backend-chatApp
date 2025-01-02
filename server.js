@@ -23,6 +23,12 @@ const PORT = process.env.PORT || 8000
 
 app.use(express.json({limit: '50mb'}))
 app.use(express.urlencoded({limit: '50mb', extended: true, parameterLimit: 50000})) 
+app.use(session({ 
+    secret: 'keyboard cat',
+    resave: false, 
+    saveUninitialized: false,
+    store: store
+})); 
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', process.env.FRONTEND_URL); // Replace with your React app's origin
     res.header('Access-Control-Allow-Credentials', 'true');
@@ -31,12 +37,7 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use(session({ 
-    secret: 'keyboard cat',
-    resave: false, 
-    saveUninitialized: false,
-    store: store
-})); 
+
 app.use(passport.authenticate('session'));
 app.use("/", authRouter)
 app.use("/", messageRouter)
