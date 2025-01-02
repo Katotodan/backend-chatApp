@@ -56,7 +56,8 @@ const io = new Server(httpServer, {
     cors: {
         origin: "https://frontend-chat-app-dusky.vercel.app",
         allowedHeaders: ["Content-Type", "Authorization"],
-        credentials: true
+        credentials: true,
+        methods: ["GET", "POST"],
     } 
 });
 
