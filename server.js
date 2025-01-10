@@ -111,6 +111,8 @@ const startServer = async()=>{
             serverSelectionTimeoutMS: 5000, // Adjust as needed
         })
         console.log("Mongodb running ....");
+        console.log(process.env.FRONTEND_URL);
+        
         httpServer.listen(PORT, () => console.log('Server running on port ' + PORT))
     } catch (error) {        
         console.log(error.message);
