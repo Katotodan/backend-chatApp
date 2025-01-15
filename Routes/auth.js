@@ -18,6 +18,8 @@ router.get('/', function(req, res, next) {
     res.status(400).json('User not defined')
   }
 });
+
+
  
 router.post('/login/password', passport.authenticate('local', {
   successRedirect: '/',

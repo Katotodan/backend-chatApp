@@ -1,7 +1,7 @@
 const express = require('express');
 const {UserModel, MsgModel} = require("../DB/DBmodel")
 const router = express.Router();
-const { chatList,searchByName,lastMsg } = require('../Controller/messageController')
+const { chatList,searchByName,chatInfo } = require('../Controller/messageController')
 
 router.get("/conversationList/:currentUserId", chatList)
 
@@ -30,7 +30,7 @@ router.get('/getMsg/:userId/:destinationId', async function(req,res,next){
       
     }
 })
- 
+router.get("/chat_info/:id", chatInfo)
 router.post('/postMsg/:userId/:destinationId', async function(req,res,next){
     try {
       const addMsg = await MsgModel.create({
@@ -47,7 +47,6 @@ router.post('/postMsg/:userId/:destinationId', async function(req,res,next){
     
 })
 router.get("/contact/:contactName", searchByName)
-router.get("/singleContact/lastmessage/:constactId/:userId", lastMsg)
 module.exports = router
 
 // Working on delete router

@@ -2,8 +2,8 @@ const { MsgModel,UserModel } = require("../DB/DBmodel")
 
 const chatList = async function(req,res,next){
     try {
-      const conversations = await MsgModel.aggregate([
-        // Find all message with sender or receiver is equal to currentUserId
+      const messages = await MsgModel.aggregate([
+        // Match messages where user is either sender or receiver
         {
           $match: {
             $or: [
@@ -12,36 +12,45 @@ const chatList = async function(req,res,next){
             ]
           }
         },
-        // Group by sender and receiver, keeping only the latest message in each group
+        
+        
+        
+        // // Group by both sender and receiver to create unique conversations
         {
-          $group: {
-            _id: { sender: "$sender", receiver: "$receiver" },
+          $addFields: {
+            conversationId: {
+              $cond: {
+                if: { $lt: ["$sender", "$receiver"] },
+                then: { $concat: ["$sender", "-", "$receiver"] },
+                else: { $concat: ["$receiver", "-", "$sender"] }
+              }
+            }
           }
         },
-
-      ])
-
-      // Filtering the conversationList
-      if(conversations.length >= 1){
-        const conversationList = conversations.map(element =>{
-          if(element._id["sender"] === req.params.currentUserId){
-            return({
-              _id: element._id["receiver"],
-            })
+        
+         // Group by conversation ID and get the first (latest) message
+        {
+          $group: {
+            _id: "$conversationId",
+            lastMessage: { $last: "$$ROOT" }
           }
-          return({
-            _id: element._id["sender"],
-          })
-        })
-      
-        // Get all the user inside conversationList
-        const users = await UserModel.find({
-          $or: conversationList
-        }).exec()
-        res.json(users)
-      }else{
-        res.send([])
-      }
+        },
+        // Replace root to clean up the output
+        {
+          $replaceRoot: { newRoot: "$lastMessage" }
+        },
+        // // Sort by timestamp descending to get latest messages first
+        {
+          $sort: { "time": -1 }
+        },
+        
+        
+        
+        
+        
+      ]);
+    
+      res.json(messages)
       
     } catch (error) {
       console.log(error);
@@ -54,52 +63,35 @@ const searchByName = async (req,res,next)=>{
   try {
     // Search user with username simular to req.params.contactName
     const data = req.params.contactName
+    
 
-    const user = await UserModel.aggregate([
-      {
-        // Match documents where `username` contains the input character and is not equal to the current user
-        $match: {
-          username: { $regex: data, $options: 'i' }, // Case-insensitive match
-          username: { $ne: req.user.username } // Exclude the current user
-        }
-      }
-    ]);
+    const user = await UserModel.find({ 
+      $and: [
+        // Username contains the search string (case-insensitive)
+        { username: { $regex: data, $options: 'i' } },
+        // Exclude the current user
+        { username: { $ne: req.user.username  } }
+      ]
+    });
     
     res.status(200).json(user)
   } catch (error) {
-    
+    res.status(400).json({"err": error.message})
   }
 }
-const lastMsg = async(req, res, next)=>{
+const chatInfo = async(req, res, next)=>{
   try {
-    const messages = await MsgModel.aggregate([
-      // Find all message with sender or receiver is equal to currentUserId
-      {
-        $match: {
-          $or: [
-            {
-              $and: [
-                { sender: req.params.constactId },
-                { receiver: req.params.userId }
-              ],
-              $and: [
-                { receiver: req.params.constactId },
-                { sender: req.params.userId }
-              ],
-            }
-          ]
-        }
-      },
-    ])
-    res.json({
-      "lastMsg": messages.at(-1)["message"],
-      "time": messages.at(-1)["time"]
-    })
-
+    const user = await UserModel.findOne({_id: req.params.id}).exec()    
+    if(user){
+      res.status(200).json(user)
+    }else{
+      res.status(404).json({"status": "fail", "message": "No user found"})
+    }
   } catch (error) {
-    
+    res.status(400).json({"status": "fail", "message": "Something went wrong"})
   }
 }
 
-// Getting all the chatList, I have just the id and last message for now.
-module.exports = {chatList, searchByName, lastMsg}
+module.exports = {chatList, searchByName, chatInfo}
+
+// I should work on message, when send message the scroll should be automatic
