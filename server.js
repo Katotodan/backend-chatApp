@@ -35,7 +35,7 @@ app.use(session({
         httpOnly: true,
         maxAge: 1000 * 60 * 60 * 24, // 1 day
         sameSite: "none",
-        domain: "https://frontend-chat-app-dusky.vercel.app"
+        // domain: "https://frontend-chat-app-dusky.vercel.app"
     },
 })); 
 app.use((req, res, next) => {
