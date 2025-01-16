@@ -38,9 +38,12 @@ app.use(session({
         // domain: "https://frontend-chat-app-dusky.vercel.app"
     },
 })); 
+
+app.set('trust proxy', 1);
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', "https://frontend-chat-app-dusky.vercel.app"); // Replace with your React app's origin
     res.header('Access-Control-Allow-Credentials', 'true');
+    res.header('credentials', 'true');
     res.header("Access-Control-Allow-Methods", "DELETE, POST, GET, OPTIONS");
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     next();
